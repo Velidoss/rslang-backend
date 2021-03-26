@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { addMethods } = require('../../utils/toResponse');
+const { MIN_PASSWORD_LENGTH } = require('../../common/config');
 const Schema = mongoose.Schema;
 
 const User = new Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
     email: {
       type: String,
       required: true,
@@ -15,7 +20,7 @@ const User = new Schema(
       type: String,
       required: true,
       trim: true,
-      minlength: 8
+      minlength: MIN_PASSWORD_LENGTH
     }
   },
   { collection: 'users' }
