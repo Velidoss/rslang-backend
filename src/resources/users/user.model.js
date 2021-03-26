@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { addMethods } = require('../../utils/toResponse');
 const Schema = mongoose.Schema;
+const {
+  MIN_PASSWORD_LENGTH,
+  USER_AVATAR_MAX_LENGTH
+} = require('../../common/config');
 
 const User = new Schema(
   {
@@ -15,7 +19,21 @@ const User = new Schema(
       type: String,
       required: true,
       trim: true,
-      minlength: 8
+      minlength: MIN_PASSWORD_LENGTH
+    },
+    avatar: {
+      type: String,
+      required: false,
+      max: USER_AVATAR_MAX_LENGTH
+    },
+    avatarCloudinaryId: {
+      type: String,
+      required: false,
+      max: USER_AVATAR_MAX_LENGTH
+    },
+    date: {
+      type: Date,
+      default: Date.now
     }
   },
   { collection: 'users' }
