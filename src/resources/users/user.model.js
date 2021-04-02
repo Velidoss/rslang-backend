@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { addMethods } = require('../../utils/toResponse');
-const { MIN_PASSWORD_LENGTH } = require('../../common/config');
 const Schema = mongoose.Schema;
 const {
   MIN_PASSWORD_LENGTH,
@@ -25,8 +24,6 @@ const User = new Schema(
       required: true,
       trim: true,
       minlength: MIN_PASSWORD_LENGTH
-<<<<<<< HEAD
-=======
     },
     avatar: {
       type: String,
@@ -41,7 +38,6 @@ const User = new Schema(
     date: {
       type: Date,
       default: Date.now
->>>>>>> 795207f0c4293b30aeb4f7ff9599d7fd7cd616ff
     }
   },
   { collection: 'users' }

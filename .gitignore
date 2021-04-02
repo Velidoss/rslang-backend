@@ -2,3 +2,5 @@ node_modules
 /.idea/
 /logs/
 .env
+yarn.lock
+package-lock.json
