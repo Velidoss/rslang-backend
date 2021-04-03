@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const User = require('./user.model');
 const {
   CLOUDINARY: { CLOUDINARY_AVATAR_UPLOAD_PRESET }
 } = require('../../common/config');
@@ -55,10 +56,52 @@ router.get(
 router.put(
   '/:id',
   userIdValidator,
+  loader.none(),
   validator(id, 'params'),
   validator(user, 'body'),
   async (req, res) => {
     const userEntity = await userService.update(req.userId, req.body);
+    res.status(OK).send(userEntity.toResponse());
+  }
+);
+
+router.put(
+  '/avatar/:id',
+  userIdValidator,
+  loader.single('avatar'),
+  validator(id, 'params'),
+  async (req, res) => {
+    const paramsToUpdate = {
+      ...req.body
+    };
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        upload_preset: CLOUDINARY_AVATAR_UPLOAD_PRESET
+      });
+      paramsToUpdate.avatar = result.secure_url;
+      paramsToUpdate.avatarCloudinaryId = result.public_id;
+      fs.unlinkSync(req.file.path);
+    }
+    const userEntity = await userService.update(req.userId, paramsToUpdate);
+    res.status(OK).send(userEntity.toResponse());
+  }
+);
+
+router.delete(
+  '/avatar/:id',
+  userIdValidator,
+  validator(id, 'params'),
+  async (req, res) => {
+    const paramsToUpdate = {
+      ...req.body
+    };
+    const userRegistered = await User.findOne({ _id: req.userId });
+    await cloudinary.uploader.destroy(userRegistered.avatarCloudinaryId);
+
+    paramsToUpdate.avatar = '';
+    paramsToUpdate.avatarCloudinaryId = '';
+    console.log(paramsToUpdate);
+    const userEntity = await userService.update(req.userId, paramsToUpdate);
     res.status(OK).send(userEntity.toResponse());
   }
 );
